@@ -76,7 +76,7 @@ def show_base(book: AddressBook):
     return result
 
 
-#При повторному вводі змінює дату
+# При повторному вводі змінює дату
 @input_error
 def add_birthday(args, book: AddressBook):
     user_name, user_birthday = args
