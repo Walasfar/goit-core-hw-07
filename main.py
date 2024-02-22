@@ -41,7 +41,8 @@ def add_contact(args, book: AddressBook):
 # Щоб вже все було як в классах, добавляю функцію добавити номер.
 @input_error
 def add_number(args, book: AddressBook):
-    book.find_record(args[0]).add_phone(args[1])
+    name, number = args
+    book.find_record(name).add_phone(number)
     return "Number added."
 
 # Змінюю номер, але у нас в book список номерів, і метод edit_phone розрахований на
@@ -50,12 +51,10 @@ def add_number(args, book: AddressBook):
 def change_number(args, book: AddressBook):
     name, old_number, new_number = args
     if name in book:
-        for key, record in book.items():
-            if name == key:
-                record.edit_phone(old_number, new_number)
-                return "Number changed."
-    else:
-        return "Name not found."
+        user = book.find_record(name)
+        user.edit_phone(old_number, new_number)
+        return 'Number changed.'
+    return f"User '{name}' not found."
 
 
 @input_error
