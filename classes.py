@@ -44,7 +44,7 @@ class Record:
         self.phones: list(Phone) = []
 
     def __str__(self):
-        return f"Contact name: {self.name.value}, birthday: {self.birthday}, phones: {'; '.join(p.value for p in self.phones)}"
+        return f"Contact name: {self.name.value}, birthday: {self.birthday}, phones: {'; '.join(str(p) for p in self.phones)}"
 
     def add_phone(self, phone: Phone):
         phone_obj = Phone(phone)
@@ -61,27 +61,27 @@ class Record:
     def add_birthday(self, birthday: str):
         self.birthday = Birthday(birthday)
 
-    def delete_phone(self, phone: str):
+    def remove_phone(self, phone: str):
         self.phones = list(filter(lambda p: p.value != phone, self.phones))
 
     def edit_phone(self, phone: str, new_phone: str):
-        new_phone_obj = Phone(new_phone)
         for p in self.phones:
             if p.value == phone:
-                p.value = new_phone_obj.value
+                p.value = Phone(new_phone)
+            else:
+                raise ValueError("Номер який Ви хочете змінити - не існує.")
 
     def find_phone(self, phone: str):
         for p in self.phones:
             if p.value == phone:
-                return f"{self.name.value}'s phone finded: {p.value}"
-            else:
-                return 'Number not found.'
+                return p
+            return None
 
-    def show_phones(self):
-        result = ""
-        for phone in self.phones:
-            result += f"{phone}\n"
-        return result
+    # def show_phones(self):
+    #     result = ""
+    #     for phone in self.phones:
+    #         result += f"{phone}\n"
+    #     return result
 
 
 class AddressBook(UserDict):
@@ -110,6 +110,9 @@ class AddressBook(UserDict):
         reminder_list = ""
         
         for user, record in self.data.items():
+
+            if record.birthday == None:
+                return None
             
             now = dt.today().date() # Сьогоднішня дата
             birthday = record.birthday.date.date()

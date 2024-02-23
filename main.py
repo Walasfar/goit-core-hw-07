@@ -61,7 +61,7 @@ def change_number(args, book: AddressBook):
 def show_phone(user: tuple, book: AddressBook):
     for name, record in book.items():
         if user[0] == name:
-            return record.show_phones()
+            return record
 
 
 def show_base(book: AddressBook):
