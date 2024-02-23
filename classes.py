@@ -85,12 +85,6 @@ class Record:
                 return p
             return None
 
-    # def show_phones(self):
-    #     result = ""
-    #     for phone in self.phones:
-    #         result += f"{phone}\n"
-    #     return result
-
 
 class AddressBook(UserDict):
     def add_record(self, record: Record):
@@ -113,52 +107,6 @@ class AddressBook(UserDict):
             result += f"{record}\n"
         return result
 
-    # def get_upcoming_birthdays(self):
-
-    #     reminder_list = ""
-
-    #     if not self.data:
-    #         return 'Niema'
-
-    #     for user, record in self.data.items():
-
-    #         if record.birthday is None:  # Провірка на те чи заданий день народження
-    #             print("Не заданий.")
-    #             continue
-
-    #         print("1")
-    #         now = dt.today()  # Сьогоднішня дата
-    #         birthday = record.birthday.date + timedelta(days=0)
-    #         next_birthday = record.birthday
-
-    #         if next_birthday.date() < now.date():  # Якщо пройшов встановлюємо слідующий рік
-    #             print("3")
-    #             next_birthday = next_birthday.replace(year=now.year + 1)
-    #             print('3.1')
-
-    #         until_the_birthday = next_birthday - now  # Різниця дат
-    #         print('3.2')
-
-    #         if 0 <= until_the_birthday.days <= 7:  # Умова при якій буде виводить дні на тиждень вперед
-    #             print("4")
-    #             reminder = {'name': user, 'congratulation_date': None}  # Шаблон словника
-    #             weekday = next_birthday.isoweekday()  # День тижня
-
-    #             match weekday:
-    #                 case 6:  # Якщо субота + 2 дні
-    #                     after_weekend = next_birthday + timedelta(days=2)
-    #                     reminder['congratulation_date'] = after_weekend.isoformat()
-
-    #                 case 7:  # Неділя + 1 день
-    #                     after_weekend = next_birthday + timedelta(days=1)
-    #                     reminder['congratulation_date'] = after_weekend.isoformat()
-
-    #                 case _:  # Якщо будні то просто верне дату
-    #                     reminder['congratulation_date'] = next_birthday.isoformat()
-
-    #             reminder_list += f"name: {reminder['name']}, greet: {reminder['congratulation_date']}\n"  # Добавляємо нагадувалку в список
-
-    #     return reminder_list  # Вертаємо список
 
     def get_upcoming_birthdays(self):
 
