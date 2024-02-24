@@ -60,8 +60,7 @@ class Record:
         # Перевірка на унікальність
         for p in self.phones:
             if  p.value == phone_obj.value:
-                return "Phone already exist."
-            
+                return "Phone already exist."  
         # Якщо все гаразд, додаємо телефон до списку
         self.phones.append(phone_obj)
         return "Phone added successfully."
@@ -83,21 +82,19 @@ class Record:
         for p in self.phones:
             if p.value == phone:
                 return p
-            return None
+        return None
 
 
 class AddressBook(UserDict):
     def add_record(self, record: Record):
         self.data[record.name.value] = record
 
-    def find_record(self, name: str):
-        try:
-            return self.data[name]
-        except KeyError:
-            return f"Record '{name}' does not exist."
+    def find(self, name: str):
+        return self.date.get(name)
         
-    def delete_record(self, name: str):
-        del self.data[name]
+    def delete(self, name: str):
+        if name in self.data:
+            del self.data[name]
 
     def show_contacts(self):
         if not self.data:
@@ -109,14 +106,12 @@ class AddressBook(UserDict):
 
 
     def get_upcoming_birthdays(self):
-
         reminder_list = ""
 
         if not self.data:
             return "Нема привітань."
 
         for user, record in self.data.items():
-
             if record.birthday == None:
                 continue
 
@@ -130,23 +125,22 @@ class AddressBook(UserDict):
             until_the_birthday = birthday - now # Різниця дат
 
             if 0 <= until_the_birthday.days <= 7: # Умова при якій буде виводить дні на тиждень вперед
-
                 reminder = {'name': user, 'congratulation_date': None} # Шаблон словника
                 weekday = birthday.isoweekday() # День тижня
 
                 match weekday:
-
-                    case 6: # Якщо субота + 2 дні
+                    # Якщо субота + 2 дні
+                    case 6:
                         after_weekend = birthday + timedelta(days=2)
                         reminder['congratulation_date'] = after_weekend.isoformat()
-
-                    case 7: # Неділя + 1 день
+                        # Неділя + 1 день
+                    case 7:
                         after_weekend = birthday + timedelta(days=1)
                         reminder['congratulation_date'] = after_weekend.isoformat()
-
-                    case _: # Якщо будні то просто верне дату
+                        # Якщо будні то просто верне дату
+                    case _:
                         reminder['congratulation_date'] = birthday.isoformat()
-
-                reminder_list += f"name: {reminder['name']}, greet: {reminder['congratulation_date']}\n" # Добавляємо нагадувалку в список
-
-        return reminder_list # Вертаємо список
+                # Добавляємо нагадувалку в список
+                reminder_list += f"name: {reminder['name']}, greet: {reminder['congratulation_date']}\n"
+        # Вертаємо список
+        return reminder_list
