@@ -42,7 +42,7 @@ def add_contact(args, book: AddressBook):
 @input_error
 def add_number(args, book: AddressBook):
     name, number = args
-    book.find_record(name).add_phone(number)
+    book.find(name).add_phone(number)
     return "Number added."
 
 # Змінюю номер, але у нас в book список номерів, і метод edit_phone розрахований на
@@ -51,7 +51,7 @@ def add_number(args, book: AddressBook):
 def change_number(args, book: AddressBook):
     name, old_number, new_number = args
     if name in book:
-        user = book.find_record(name)
+        user = book.find(name)
         user.edit_phone(old_number, new_number)
         return 'Number changed.'
     return f"User '{name}' not found."
@@ -88,7 +88,7 @@ def add_birthday(args, book: AddressBook):
 
 @input_error
 def show_birthday(args, book: AddressBook):
-    return book.find_record(args[0]).birthday
+    return book.find(args[0]).birthday
 
 
 commands = """
