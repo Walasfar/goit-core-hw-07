@@ -2,104 +2,58 @@ from datetime import datetime as dt, timedelta
 from collections import UserDict
 
 
-# class Field:
-#     def __init__(self, value):
-#         self.value = value
-
-#     def is_valid(self, value):
-#         return True
-
-#     @property
-#     def value(self):
-#         return self._value
-
-#     @value.setter
-#     def value(self, value):
-#         if not self.is_valid(value):
-#             raise ValueError
-#         else:
-#             self._value = value
-
-#     def __str__(self) -> str:
-#         return str(self.value)
-
-
-# class Birthday(Field):
-    
-#     def is_valid(self, value):
-#         try:
-#             dt.strptime(value, "%d.%m.%Y")
-#         except:
-#             return False
-#         return True
-        
-#     @property
-#     def date(self):
-#         return self._value
-
-#     @date.setter
-#     def date(self, value):
-#         if not self.is_valid(value):
-#             raise ValueError
-#         else:
-#             print("Pishlo")
-#             self._value = dt.strptime(value, '%d.%m.%Y')
-
-#     def __str__(self) -> str:
-#         return self._value
-
-# class Name(Field):
-    
-#     def is_valid(self, value):
-#         return bool(value)
-
-
-# class Phone(Field):
-    
-#     def is_valid(self, value):
-#         return len(value) == 10 and value.isdigit()
-
 class Field:
     def __init__(self, value):
         self.value = value
 
-    def __str__(self):
+    def is_valid(self, value):
+        return True
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, value): # Вбив би той date!
+        if not self.is_valid(value):
+            raise ValueError
+        else:
+            self._value = value
+
+    def __str__(self) -> str:
         return str(self.value)
 
 
+class Birthday(Field):
+    
+    def is_valid(self, value):
+        try:
+            dt.strptime(value, "%d.%m.%Y")
+        except:
+            return False
+        return True
+        
+    @property
+    def value(self):
+        return self.__value
+
+    @value.setter
+    def value(self, value):
+        if not self.is_valid(value):
+            raise ValueError
+        else:
+            self.__value = dt.strptime(value, '%d.%m.%Y')
+
 class Name(Field):
-    def __init__(self, value):
-        super().__init__(value)
+    
+    def is_valid(self, value):
+        return bool(value)
 
 
 class Phone(Field):
-
-    def __init__(self, value):
-        super().__init__(value)
-        
-        if not self.validate_number():
-            raise ValueError("Неправельний номер телефону. Номер має складатися з 10 цифр.")
     
-    def validate_number(self):
-        return len(self.value) == 10 and self.value.isdigit()
-
-
-class Birthday(Field):
-    def __init__(self, value):
-        super().__init__(value)
-        try:
-            # Провалідуємо дату одразу, методом .strptime
-            self.date = dt.strptime(value, "%d.%m.%Y")
-        except ValueError:
-            raise ValueError("Invalid date format. Use DD.MM.YYYY")
-        
-        @property
-        def date(self):
-            return self._date
-
-        @date.setter
-        def date(self, value):
-            self._date = value
+    def is_valid(self, value):
+        return len(value) == 10 and value.isdigit()
 
 
 class Record:
@@ -124,7 +78,6 @@ class Record:
 
     def add_birthday(self, birthday: str):
         self.birthday = Birthday(birthday)
-        print(type(self.birthday))
 
     def find_phone(self, phone: str):
         for p in self.phones:
@@ -154,7 +107,7 @@ class AddressBook(UserDict):
         if name in self.data:
             del self.data[name]
 
-    def get_upcoming_birthdays(self: dict) -> list:
+    def get_upcoming_birthdays(self: dict) -> tuple:
         reminder_list = []
         reminder_string = ""
 
@@ -164,9 +117,9 @@ class AddressBook(UserDict):
         for user, record in self.data.items():
             if record.birthday == None:
                 continue
+            
             now = dt.today().date() # Сьогоднішня дата
-            birthday = record.birthday.date.date()
-            # print(type(birthday))
+            birthday = record.birthday.value.date()
             birthday = birthday.replace(year=now.year) # Теперішній рік для ДН
 
             if birthday < now: # Якщо пройшов встановлюємо слідующий рік
@@ -190,10 +143,12 @@ class AddressBook(UserDict):
                         # Якщо будні то просто верне дату
                     case _:
                         reminder['congratulation_date'] = birthday.isoformat()
+                        
                 # Добавляємо нагадувалку в список
                 reminder_list.append(reminder)
-                reminder_string += f"name: {reminder['name']}, greet: {reminder['congratulation_date']}"
-        # Вертаємо список
+                reminder_string += f"name: {reminder['name']}, greet: {reminder['congratulation_date']}\n"
+                
+        # Повертаємо список словників та рядок з привітаннями для комфорта.
         return reminder_string, reminder_list
 
     def __str__(self):
