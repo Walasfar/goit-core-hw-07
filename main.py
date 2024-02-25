@@ -28,67 +28,67 @@ def parse_input(user_input: str) -> tuple:
 @input_error
 def add_contact(args, book: AddressBook):
     name, phone = args
-    contact = Record(name)
-    contact.add_phone(phone)
-    
-    if name not in book:
-        book.add_record(contact)
+    record = book.find(name)
+    if not record:
+        record = Record(name)
+        record.add_phone(phone)
+        book.add_record(record)
         return "Contact added."
-    else:
-        return "Contact already exists."
+    
+    record.add_phone(phone)
+    return "Phone added." # Це реально красиво!
 
-
-# Щоб вже все було як в классах, добавляю функцію добавити номер.
+# При повторному вводі змінює дату
 @input_error
-def add_number(args, book: AddressBook):
-    name, number = args
-    book.find(name).add_phone(number)
-    return "Number added."
+def add_birthday(args, book: AddressBook):
+    name, birthday = args
+    record = book.find(name)
+    
+    if not record:
+        return 'User does not exist.'
+    
+    record.add_birthday(birthday)
+    return f"{name}'s Birthday added."
 
-# Змінюю номер, але у нас в book список номерів, і метод edit_phone розрахований на
-# ввід номеру, який слід змінити. Тому зробив так.
+
 @input_error
 def change_number(args, book: AddressBook):
     name, old_number, new_number = args
-    if name in book:
-        user = book.find(name)
-        user.edit_phone(old_number, new_number)
-        return 'Number changed.'
-    return f"User '{name}' not found."
+    record = book.find(name)
+    if not record:
+        return "Contact not found."
+    
+    record.edit_phone(old_number, new_number)
+    return f"User '{name}' phone changed."
 
 
 @input_error
-def show_phone(user: tuple, book: AddressBook):
-    for name, record in book.items():
-        if user[0] == name:
-            return record
+def show_phone(args: tuple, book: AddressBook):
+    name = args[0]
+    record = book.find(name)
+    if not record:
+        return "Contact not found"
+    return '; '.join(str(phone) for phone in record.phones)
 
 
 def show_base(book: AddressBook):
     if not book:
         return "Book is empty."
-    
-    result = ""
-    
-    for name, record in book.items():
-        result += f"{record}\n"
-        
-    return result
-
-
-# При повторному вводі змінює дату
-@input_error
-def add_birthday(args, book: AddressBook):
-    user_name, user_birthday = args
-    for name, record in book.items():
-        if user_name == name:
-            record.add_birthday(user_birthday)
-            return f"{args[0]}'s Birthday added."
+    return book
 
 
 @input_error
 def show_birthday(args, book: AddressBook):
-    return book.find(args[0]).birthday
+    name = args[0]
+    record = book.find(name)
+    if not record:
+        return "Contact not found."
+    return record.birthday
+
+@input_error
+def show_birthdays(args, book: AddressBook):
+    birthdays_string, birthdays_list = book.get_upcoming_birthdays()
+    return birthdays_string
 
 
 commands = """
@@ -96,7 +96,6 @@ Commands:
     all;
     commands;
     add user number;
-    add-number user;
     add-birthday user (format DD.MM.YYYY);
     show-birthday user;
     birthdays;
@@ -128,14 +127,12 @@ def main():
                 print(show_base(book))
             case 'add':
                 print(add_contact(args, book))
-            case 'add-number':
-                print(add_number(args,book))
             case 'add-birthday':
                 print(add_birthday(args, book))
             case 'show-birthday':
                 print(show_birthday(args, book))
             case 'birthdays':
-                print(book.get_upcoming_birthdays())
+                print(show_birthdays(args, book))
             case 'phone':
                 print(show_phone(args, book))
             case 'change':
