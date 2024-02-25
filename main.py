@@ -71,7 +71,7 @@ def show_phone(args: tuple, book: AddressBook):
     return '; '.join(str(phone) for phone in record.phones)
 
 
-def show_base(book: AddressBook):
+def show_all(book: AddressBook):
     if not book:
         return "Book is empty."
     return book
@@ -124,7 +124,7 @@ def main():
             case 'hello':
                 print("Hello im Jarvis! Im here for help you!")
             case 'all':
-                print(show_base(book))
+                print(show_all(book))
             case 'add':
                 print(add_contact(args, book))
             case 'add-birthday':
