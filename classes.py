@@ -198,7 +198,3 @@ class AddressBook(UserDict):
 
     def __str__(self):
         return "\n".join(str(record) for record in self.data.values())
-
-
-birthday = Birthday('22.05.1995')
-print(birthday.date)
