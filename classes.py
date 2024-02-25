@@ -2,6 +2,63 @@ from datetime import datetime as dt, timedelta
 from collections import UserDict
 
 
+# class Field:
+#     def __init__(self, value):
+#         self.value = value
+
+#     def is_valid(self, value):
+#         return True
+
+#     @property
+#     def value(self):
+#         return self._value
+
+#     @value.setter
+#     def value(self, value):
+#         if not self.is_valid(value):
+#             raise ValueError
+#         else:
+#             self._value = value
+
+#     def __str__(self) -> str:
+#         return str(self.value)
+
+
+# class Birthday(Field):
+    
+#     def is_valid(self, value):
+#         try:
+#             dt.strptime(value, "%d.%m.%Y")
+#         except:
+#             return False
+#         return True
+        
+#     @property
+#     def date(self):
+#         return self._value
+
+#     @date.setter
+#     def date(self, value):
+#         if not self.is_valid(value):
+#             raise ValueError
+#         else:
+#             print("Pishlo")
+#             self._value = dt.strptime(value, '%d.%m.%Y')
+
+#     def __str__(self) -> str:
+#         return self._value
+
+# class Name(Field):
+    
+#     def is_valid(self, value):
+#         return bool(value)
+
+
+# class Phone(Field):
+    
+#     def is_valid(self, value):
+#         return len(value) == 10 and value.isdigit()
+
 class Field:
     def __init__(self, value):
         self.value = value
@@ -32,7 +89,7 @@ class Birthday(Field):
         super().__init__(value)
         try:
             # Провалідуємо дату одразу, методом .strptime
-            self.date = dt.strptime(self.value, "%d.%m.%Y")
+            self.date = dt.strptime(value, "%d.%m.%Y")
         except ValueError:
             raise ValueError("Invalid date format. Use DD.MM.YYYY")
         
@@ -63,20 +120,11 @@ class Record:
                 return "Phone already exist."  
         # Якщо все гаразд, додаємо телефон до списку
         self.phones.append(phone_obj)
-        return "Phone added successfully."
+        return phone_obj
 
     def add_birthday(self, birthday: str):
         self.birthday = Birthday(birthday)
-
-    def remove_phone(self, phone: str):
-        self.phones = list(filter(lambda p: p.value != phone, self.phones))
-
-    def edit_phone(self, phone: str, new_phone: str):
-        for p in self.phones:
-            if p.value == phone:
-                p.value = Phone(new_phone)
-            else:
-                raise ValueError("Номер який Ви хочете змінити - не існує.")
+        print(type(self.birthday))
 
     def find_phone(self, phone: str):
         for p in self.phones:
@@ -84,29 +132,31 @@ class Record:
                 return p
         return None
 
+    def remove_phone(self, phone: str):
+        self.phones = list(filter(lambda p: p.value != phone, self.phones))
+
+    def edit_phone(self, phone: str, new_phone: str):
+        if self.find_phone(phone):
+            self.remove_phone(phone)
+            self.add_phone(new_phone)
+        else:
+            raise ValueError
+
 
 class AddressBook(UserDict):
     def add_record(self, record: Record):
         self.data[record.name.value] = record
 
     def find(self, name: str):
-        return self.date.get(name)
+        return self.data.get(name)
         
     def delete(self, name: str):
         if name in self.data:
             del self.data[name]
 
-    def show_contacts(self):
-        if not self.data:
-            return "Book is empty."
-        result = ""
-        for name, record in self.data.items():
-            result += f"{record}\n"
-        return result
-
-
-    def get_upcoming_birthdays(self):
-        reminder_list = ""
+    def get_upcoming_birthdays(self: dict) -> list:
+        reminder_list = []
+        reminder_string = ""
 
         if not self.data:
             return "Нема привітань."
@@ -114,9 +164,9 @@ class AddressBook(UserDict):
         for user, record in self.data.items():
             if record.birthday == None:
                 continue
-
             now = dt.today().date() # Сьогоднішня дата
             birthday = record.birthday.date.date()
+            # print(type(birthday))
             birthday = birthday.replace(year=now.year) # Теперішній рік для ДН
 
             if birthday < now: # Якщо пройшов встановлюємо слідующий рік
@@ -141,6 +191,14 @@ class AddressBook(UserDict):
                     case _:
                         reminder['congratulation_date'] = birthday.isoformat()
                 # Добавляємо нагадувалку в список
-                reminder_list += f"name: {reminder['name']}, greet: {reminder['congratulation_date']}\n"
+                reminder_list.append(reminder)
+                reminder_string += f"name: {reminder['name']}, greet: {reminder['congratulation_date']}"
         # Вертаємо список
-        return reminder_list
+        return reminder_string, reminder_list
+
+    def __str__(self):
+        return "\n".join(str(record) for record in self.data.values())
+
+
+birthday = Birthday('22.05.1995')
+print(birthday.date)
